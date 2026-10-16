@@ -11,6 +11,22 @@ npm run dev
 
 Create a production build with `npm run build`, then serve the `dist` directory over HTTPS (or localhost). The web app manifest and service worker enable installation and offline app-shell access in supported browsers.
 
+## Deploy
+
+### Vercel
+
+1. Import this repository in [Vercel](https://vercel.com/new) and authorize access to GitHub.
+2. Keep the detected Vite settings: `npm run build` and `dist` as the output directory. The included `vercel.json` configures these settings.
+3. Select **Deploy**. Vercel will build on each push to the connected production branch and create preview deployments for other branches and pull requests.
+
+### GitHub Pages
+
+1. Push this project to a GitHub repository with a `main` branch.
+2. In the repository, open **Settings → Pages** and set the build and deployment source to **GitHub Actions**.
+3. Push to `main` or manually run **Deploy to GitHub Pages** from the repository's **Actions** tab. The workflow builds and publishes `dist`; project-site base paths are configured automatically.
+
+For a GitHub Pages deployment from a branch other than `main`, edit the `branches` entry in `.github/workflows/deploy-pages.yml`.
+
 ## How the estimate works
 
 The planner estimates the time for normalized sleep pressure to reach a target:
