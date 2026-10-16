@@ -11,6 +11,8 @@ npm run dev
 
 Create a production build with `npm run build`, then serve the `dist` directory over HTTPS (or localhost). The web app manifest and service worker enable installation and offline app-shell access in supported browsers.
 
+After the first successful online visit, let the service worker finish installing before relying on offline access. It precaches the app shell and built JavaScript/CSS, then serves those files from cache when offline. Sleep history, profile, and theme are stored locally in the browser and remain available offline.
+
 ## Deploy
 
 ### Vercel
@@ -42,4 +44,6 @@ These are planning heuristics, not measurements of adenosine, sleep pressure, or
 
 ## Data and privacy
 
-The profile, last wake-up, sleep history, and display preference are saved in this browser's `localStorage`. Logging a sleep updates the wake-window clock to its wake-up time, and a wake-up can also be logged separately at a selected past time. The sleep calendar splits overnight sessions across the local days they overlap and compares logged daily totals with an approximate age-based target. Nothing is uploaded or synchronized to another device. Clearing browser site data will remove the saved planner data; use **Clear saved data** in the app to remove it intentionally.
+The profile, last wake-up, sleep history, and display preference are saved in this browser's `localStorage`. The app requests persistent browser storage when supported and reports whether the browser grants protection from automatic storage cleanup. This reduces eviction risk, but no website can guarantee data will remain forever: browsers or operating systems may clear site data, storage can fail or run out of quota, and uninstalling an app or clearing its browser data may remove it. The data belongs to this browser and site origin; moving between Vercel and GitHub Pages, changing domains, or using another device does not transfer it. Nothing is uploaded or synchronized. Use **Clear saved data** to intentionally remove the planner profile and history.
+
+Logging a sleep updates the wake-window clock to its wake-up time, and a wake-up can also be logged separately at a selected past time. The sleep calendar splits overnight sessions across the local days they overlap and compares logged daily totals with an approximate age-based target.

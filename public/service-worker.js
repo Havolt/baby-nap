@@ -1,4 +1,4 @@
-const CACHE_NAME = 'little-day-v3'
+const CACHE_NAME = 'little-day-v4'
 const APP_SHELL = [
   'manifest.webmanifest',
   'nap-icon.svg',

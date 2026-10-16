@@ -28,6 +28,13 @@ type WakeWindow = {
   target: number
 }
 
+type StoragePersistence =
+  | 'checking'
+  | 'granted'
+  | 'not-granted'
+  | 'unsupported'
+  | 'error'
+
 const STORAGE_KEY = 'little-dreams-planner-v1'
 const THEME_STORAGE_KEY = 'little-dreams-theme-v1'
 const SLEEP_PRESSURE_MAX = 1
@@ -266,6 +273,10 @@ function App() {
   const [storageError, setStorageError] = useState(
     [initial.error, initialNightMode.error].filter(Boolean).join(' '),
   )
+  const [storagePersistence, setStoragePersistence] =
+    useState<StoragePersistence>(() =>
+      'storage' in navigator ? 'checking' : 'unsupported',
+    )
   const [nightMode, setNightMode] = useState(initialNightMode.enabled)
   const [now, setNow] = useState(() => Date.now())
   const [calendarMonth, setCalendarMonth] = useState(() => {
@@ -306,6 +317,28 @@ function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = nightMode ? 'night' : 'day'
   }, [nightMode])
+
+  useEffect(() => {
+    const storage = navigator.storage
+    if (!storage?.persisted || !storage.persist) return
+
+    let cancelled = false
+    void (async () => {
+      try {
+        const alreadyPersistent = await storage.persisted()
+        const persistent = alreadyPersistent || (await storage.persist())
+        if (!cancelled) {
+          setStoragePersistence(persistent ? 'granted' : 'not-granted')
+        }
+      } catch {
+        if (!cancelled) setStoragePersistence('error')
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
@@ -1051,7 +1084,17 @@ function App() {
       <footer className="page-footer">
         <p>Made for the little moments <span aria-hidden="true">♡</span></p>
         <div className="footer-actions">
-          <span>Your data stays in this browser</span>
+          <span role="status">
+            {storagePersistence === 'checking' && 'Checking device storage…'}
+            {storagePersistence === 'granted' &&
+              'Saved on this device · protected from automatic cleanup'}
+            {storagePersistence === 'not-granted' &&
+              'Saved on this device · browser may clear storage'}
+            {storagePersistence === 'unsupported' &&
+              'Saved on this device · browser manages storage'}
+            {storagePersistence === 'error' &&
+              'Saved on this device · storage protection unavailable'}
+          </span>
           <button type="button" onClick={handleReset}>Clear saved data</button>
         </div>
       </footer>
